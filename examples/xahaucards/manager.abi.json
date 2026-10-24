@@ -1,0 +1,180 @@
+[
+  {
+    "name": "Card table: sets",
+    "description": "T + set: the set's display name. xahaucards.table.",
+    "selector": [
+      {"type": "Null", "label": "Padding", "byteLength": 29, "exclude": true},
+      {"type": "VarString", "label": "Kind", "byteLength": 1, "pattern": "T", "exclude": true},
+      {"type": "VarString", "label": "Set", "byteLength": 2, "patternRegex": "^[0-9]{2}$"}
+    ],
+    "data": [
+      {"type": "UInt8", "label": "Length", "description": "True length of the name; the rest of the field is NUL padding.", "exclude": true},
+      {"type": "VarString", "label": "Set name", "byteLength": 12, "description": "NUL padded to 12 bytes."}
+    ]
+  },
+  {
+    "name": "Card table: set shape",
+    "description": "D + set: the five rarity blocks the mint rolls a subject from. xahaucards.table.",
+    "selector": [
+      {"type": "Null", "label": "Padding", "byteLength": 29, "exclude": true},
+      {"type": "VarString", "label": "Kind", "byteLength": 1, "pattern": "D", "exclude": true},
+      {"type": "VarString", "label": "Set", "byteLength": 2, "patternRegex": "^[0-9]{2}$"}
+    ],
+    "data": [
+      {"type": "UInt16", "label": "Common first id", "endianness": "BE", "description": "First subject id of the common block."},
+      {"type": "UInt16", "label": "Common count", "endianness": "BE", "description": "How many common subjects the block holds."},
+      {"type": "UInt16", "label": "Uncommon first id", "endianness": "BE", "description": "First subject id of the uncommon block."},
+      {"type": "UInt16", "label": "Uncommon count", "endianness": "BE", "description": "How many uncommon subjects the block holds."},
+      {"type": "UInt16", "label": "Rare first id", "endianness": "BE", "description": "First subject id of the rare block."},
+      {"type": "UInt16", "label": "Rare count", "endianness": "BE", "description": "How many rare subjects the block holds."},
+      {"type": "UInt16", "label": "Epic first id", "endianness": "BE", "description": "First subject id of the epic block."},
+      {"type": "UInt16", "label": "Epic count", "endianness": "BE", "description": "How many epic subjects the block holds."},
+      {"type": "UInt16", "label": "Legendary first id", "endianness": "BE", "description": "First subject id of the legendary block."},
+      {"type": "UInt16", "label": "Legendary count", "endianness": "BE", "description": "How many legendary subjects the block holds."}
+    ]
+  },
+  {
+    "name": "Card table: on sale",
+    "description": "O + set: 1 puts the set on sale. Any other value, or no entry, is closed. Read by the shop only. xahaucards.table.",
+    "selector": [
+      {"type": "Null", "label": "Padding", "byteLength": 29, "exclude": true},
+      {"type": "VarString", "label": "Kind", "byteLength": 1, "pattern": "O", "exclude": true},
+      {"type": "VarString", "label": "Set", "byteLength": 2, "patternRegex": "^[0-9]{2}$"}
+    ],
+    "data": [
+      {"type": "UInt8", "label": "Open", "description": "1 = on sale; anything else = closed."}
+    ]
+  },
+  {
+    "name": "Card table: factions",
+    "description": "F + set + faction key: the faction's display name. xahaucards.table.",
+    "selector": [
+      {"type": "Null", "label": "Padding", "byteLength": 25, "exclude": true},
+      {"type": "VarString", "label": "Kind", "byteLength": 1, "pattern": "F", "exclude": true},
+      {"type": "VarString", "label": "Set", "byteLength": 2, "patternRegex": "^[0-9]{2}$"},
+      {"type": "VarString", "label": "Faction key", "byteLength": 4}
+    ],
+    "data": [
+      {"type": "UInt8", "label": "Length", "description": "True length of the name; the rest of the field is NUL padding.", "exclude": true},
+      {"type": "VarString", "label": "Faction name", "byteLength": 12, "description": "NUL padded to 12 bytes."}
+    ]
+  },
+  {
+    "name": "Card table: subjects",
+    "description": "S + set + subject: the card's name and faction. xahaucards.table.",
+    "selector": [
+      {"type": "Null", "label": "Padding", "byteLength": 26, "exclude": true},
+      {"type": "VarString", "label": "Kind", "byteLength": 1, "pattern": "S", "exclude": true},
+      {"type": "VarString", "label": "Set", "byteLength": 2, "patternRegex": "^[0-9]{2}$"},
+      {"type": "VarString", "label": "Subject", "byteLength": 3, "patternRegex": "^[0-9]{3}$"}
+    ],
+    "data": [
+      {"type": "UInt8", "label": "Length", "description": "True length of the name; the rest of the field is NUL padding.", "exclude": true},
+      {"type": "VarString", "label": "Card name", "byteLength": 20, "description": "NUL padded to 20 bytes."},
+      {"type": "VarString", "label": "Faction key", "byteLength": 4}
+    ]
+  },
+  {
+    "name": "Card table: rarities",
+    "description": "R + rarity letter (C U R E L): the rarity's display name. xahaucards.table.",
+    "selector": [
+      {"type": "Null", "label": "Padding", "byteLength": 30, "exclude": true},
+      {"type": "VarString", "label": "Kind", "byteLength": 1, "pattern": "R", "exclude": true},
+      {"type": "VarString", "label": "Rarity", "byteLength": 1, "patternRegex": "^[CUREL]$"}
+    ],
+    "data": [
+      {"type": "UInt8", "label": "Length", "description": "True length of the name; the rest of the field is NUL padding.", "exclude": true},
+      {"type": "VarString", "label": "Rarity name", "byteLength": 12, "description": "NUL padded to 12 bytes."}
+    ]
+  },
+  {
+    "name": "Setting: pack price",
+    "description": "PRICE: the exact amount the shop accepts for a pack. xahaucards.settings.",
+    "selector": [
+      {"type": "Null", "label": "Padding", "byteLength": 27, "exclude": true},
+      {"type": "VarString", "label": "Key", "byteLength": 5, "pattern": "PRICE"}
+    ],
+    "data": [
+      {"type": "UInt64", "label": "Drops", "endianness": "BE", "description": "Exact pack price. 1 XAH = 1,000,000 drops."}
+    ]
+  },
+  {
+    "name": "Setting: mint budget",
+    "description": "BUDGET: what the shop forwards to the issuer each pack to pay for its ten emitted transactions. xahaucards.settings.",
+    "selector": [
+      {"type": "Null", "label": "Padding", "byteLength": 26, "exclude": true},
+      {"type": "VarString", "label": "Key", "byteLength": 6, "pattern": "BUDGET"}
+    ],
+    "data": [
+      {"type": "UInt64", "label": "Drops", "endianness": "BE", "description": "Forwarded to the issuer per pack. 1 XAH = 1,000,000 drops."}
+    ]
+  },
+  {
+    "name": "Setting: new account allowance",
+    "description": "NEWACCT: added to a free pack's budget when the recipient's account does not exist yet. xahaucards.settings.",
+    "selector": [
+      {"type": "Null", "label": "Padding", "byteLength": 25, "exclude": true},
+      {"type": "VarString", "label": "Key", "byteLength": 7, "pattern": "NEWACCT"}
+    ],
+    "data": [
+      {"type": "UInt64", "label": "Drops", "endianness": "BE", "description": "1 XAH = 1,000,000 drops."}
+    ]
+  },
+  {
+    "name": "Setting: shop account",
+    "description": "SHOP: the only account whose emitted payment the mint acts on. xahaucards.settings.",
+    "selector": [
+      {"type": "Null", "label": "Padding", "byteLength": 28, "exclude": true},
+      {"type": "VarString", "label": "Key", "byteLength": 4, "pattern": "SHOP"}
+    ],
+    "data": [
+      {"type": "AccountID", "label": "Shop"}
+    ]
+  },
+  {
+    "name": "Setting: claim authority",
+    "description": "CLAIM: the only account the shop accepts a GRANT Invoke from. xahaucards.settings.",
+    "selector": [
+      {"type": "Null", "label": "Padding", "byteLength": 27, "exclude": true},
+      {"type": "VarString", "label": "Key", "byteLength": 5, "pattern": "CLAIM"}
+    ],
+    "data": [
+      {"type": "AccountID", "label": "Claim authority"}
+    ]
+  },
+  {
+    "name": "Setting: card art domain",
+    "description": "DOMAIN: the host every card's image URL points at. xahaucards.settings.",
+    "selector": [
+      {"type": "Null", "label": "Padding", "byteLength": 26, "exclude": true},
+      {"type": "VarString", "label": "Key", "byteLength": 6, "pattern": "DOMAIN"}
+    ],
+    "data": [
+      {"type": "VarString", "label": "Host"}
+    ]
+  },
+  {
+    "name": "Attestor roll",
+    "description": "Accounts that may sign cards, with their slot and display name. xahaucards.attest.",
+    "selector": [
+      {"type": "Null", "label": "Padding", "byteLength": 12, "exclude": true},
+      {"type": "AccountID", "label": "Attestor"}
+    ],
+    "data": [
+      {"type": "VarString", "label": "Slot", "byteLength": 2, "patternRegex": "^[0-9]{2}$"},
+      {"type": "VarString", "label": "Name"}
+    ]
+  },
+  {
+    "name": "Signature allowances",
+    "description": "SIGS + slot: how many more cards that slot may sign. xahaucards.attest.",
+    "selector": [
+      {"type": "Null", "label": "Padding", "byteLength": 26, "exclude": true},
+      {"type": "VarString", "label": "Key", "byteLength": 4, "pattern": "SIGS", "exclude": true},
+      {"type": "VarString", "label": "Slot", "byteLength": 2, "patternRegex": "^[0-9]{2}$"}
+    ],
+    "data": [
+      {"type": "UInt32", "label": "Signatures left", "endianness": "BE"}
+    ]
+  }
+]

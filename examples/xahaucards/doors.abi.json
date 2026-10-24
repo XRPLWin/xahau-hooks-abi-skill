@@ -1,0 +1,13 @@
+[
+  {
+    "name": "Grant allowance",
+    "description": "GRANTS: how many more free packs the GRANT door may deal. Set by an ALLOW Invoke from the shop's own key.",
+    "selector": [
+      {"type": "Null", "label": "Padding", "byteLength": 26, "exclude": true},
+      {"type": "VarString", "label": "Key", "byteLength": 6, "pattern": "GRANTS", "exclude": true}
+    ],
+    "data": [
+      {"type": "UInt32", "label": "Grants left", "endianness": "BE"}
+    ]
+  }
+]

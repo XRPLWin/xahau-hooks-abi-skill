@@ -1,0 +1,17 @@
+{
+  "name": "xahau-hooks-abi-scripts",
+  "private": true,
+  "type": "module",
+  "description": "Validate, decode and check xahauwin.com hook manifests (HookState ABIs) with the explorer's own decoder.",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node test.mjs"
+  },
+  "dependencies": {
+    "bignumber.js": "^11.1.1",
+    "xahau-address-codec": "^5.0.0",
+    "xahau-binary-codec": "^2.3.0"
+  }
+}

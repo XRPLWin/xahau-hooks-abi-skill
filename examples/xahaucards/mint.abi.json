@@ -1,0 +1,27 @@
+[
+  {
+    "name": "Edition counters",
+    "description": "Copies minted of each card subject, which is also the edition number the last copy got. Keyed XC-<set>-<subject>, left padded.",
+    "selector": [
+      {"type": "Null", "label": "Padding", "byteLength": 23, "exclude": true},
+      {"type": "VarString", "label": "Prefix", "byteLength": 3, "pattern": "XC-", "exclude": true},
+      {"type": "VarString", "label": "Set", "byteLength": 2, "patternRegex": "^[0-9]{2}$"},
+      {"type": "VarString", "label": "Separator", "byteLength": 1, "pattern": "-", "exclude": true},
+      {"type": "VarString", "label": "Subject", "byteLength": 3, "patternRegex": "^[0-9]{3}$"}
+    ],
+    "data": [
+      {"type": "UInt32", "label": "Copies minted", "endianness": "BE"}
+    ]
+  },
+  {
+    "name": "Total cards minted",
+    "description": "MINTCOUNT: every card this issuer has ever minted. Written once a pack.",
+    "selector": [
+      {"type": "Null", "label": "Padding", "byteLength": 23, "exclude": true},
+      {"type": "VarString", "label": "Key", "byteLength": 9, "pattern": "MINTCOUNT", "exclude": true}
+    ],
+    "data": [
+      {"type": "UInt32", "label": "Cards minted", "endianness": "BE"}
+    ]
+  }
+]

@@ -1,0 +1,50 @@
+{
+  "account": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+  "network": "https://xahau.network",
+  "ledger": 26133735,
+  "hooks": [
+    {
+      "name": "govern",
+      "hash": "5EDF6439C47C423EAC99C1061EE2A0CE6A24A58C8E8A66E4B3AF91D76772DC77",
+      "namespace": "0000000000000000000000000000000000000000000000000000000000000000",
+      "manifest": "governance.manifest.json"
+    }
+  ],
+  "state": {
+    "0000000000000000000000000000000000000000000000000000000000000000": "state.json"
+  },
+  "extra": {
+    "0000000000000000000000000000000000000000000000000000000000000000": [
+      {
+        "note": "made up from govern.c: a member's vote to put hook HookHash at position 3 (VH, layer 1)",
+        "k": "56480301000000000000000088CECA8ED635F79573136EAAA2B70F07C2F2B9D8",
+        "v": "5EDF6439C47C423EAC99C1061EE2A0CE6A24A58C8E8A66E4B3AF91D76772DC77"
+      },
+      {
+        "note": "made up: a member's vote for a reward rate (VRR, layer 1)",
+        "k": "56525201000000000000000088CECA8ED635F79573136EAAA2B70F07C2F2B9D8",
+        "v": "55554025A6D7CB53"
+      },
+      {
+        "note": "made up: a member's vote for a reward delay (VRD, layer 1)",
+        "k": "56524401000000000000000088CECA8ED635F79573136EAAA2B70F07C2F2B9D8",
+        "v": "00806AACAF3C0956"
+      },
+      {
+        "note": "made up: one vote counted for that hook at position 3 (CH): key holds hash bytes 5-32",
+        "k": "43480301C47C423EAC99C1061EE2A0CE6A24A58C8E8A66E4B3AF91D76772DC77",
+        "v": "01"
+      },
+      {
+        "note": "made up: one vote counted for that reward rate (CRR)",
+        "k": "43525201000000000000000000000000000000000000000055554025A6D7CB53",
+        "v": "01"
+      },
+      {
+        "note": "made up: one vote counted for that reward delay (CRD)",
+        "k": "43524401000000000000000000000000000000000000000000806AACAF3C0956",
+        "v": "01"
+      }
+    ]
+  }
+}

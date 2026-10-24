@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Purchase records",
+    "description": "One per pack in flight, keyed by the buyer's Payment txid (or the GRANT Invoke's). Deleted on delivery; P pending, G granted, F failed (refund owed), L lapsed grant.",
+    "selector": [
+      {"type": "Hash256", "label": "Txid"}
+    ],
+    "data": [
+      {"type": "AccountID", "label": "Buyer"},
+      {"type": "VarString", "label": "Set", "byteLength": 2, "patternRegex": "^[0-9]{2}$"},
+      {"type": "VarString", "label": "Status", "byteLength": 1, "patternRegex": "^[PGFL]$", "description": "P pending, G granted, F failed, L lapsed."}
+    ]
+  }
+]

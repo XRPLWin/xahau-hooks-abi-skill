@@ -1,0 +1,28 @@
+{
+  "name": "My Hook",
+  "description": "One line: what the hook does, for someone browsing the explorer.",
+  "readme": "# My Hook\n\nWhat fires it and what one transaction does.\n\n## HookParameters\n\n| Name | Type | Unit | What it sets |\n| --- | --- | --- | --- |\n| `FEE` | UInt64 (BE) | drops | The fee. |\n\n## State\n\n- **Record kind**: what one entry is, its key and its value.\n\nNumbers are big-endian. Times are ledger time (seconds since 2000-01-01).",
+  "repo": "https://github.com/you/my-hook",
+  "license": "MIT",
+  "publishers": [
+    { "name": "Your name or organization", "type": "organization", "url": "https://example.com" }
+  ],
+  "namespaces": {
+    "0000000000000000000000000000000000000000000000000000000000000000": "the seed string hashed into the namespace"
+  },
+  "abi": {
+    "hookStates": [
+      {
+        "name": "Settings: fee",
+        "description": "FEE: the fee the hook charges. Key \"FEE\", left padded.",
+        "selector": [
+          { "type": "Null", "label": "Padding", "byteLength": 29, "exclude": true },
+          { "type": "VarString", "label": "Key", "byteLength": 3, "pattern": "FEE", "exclude": true }
+        ],
+        "data": [
+          { "type": "UInt64", "label": "Fee", "endianness": "BE", "description": "In drops: 1 XAH is 1,000,000 drops." }
+        ]
+      }
+    ]
+  }
+}

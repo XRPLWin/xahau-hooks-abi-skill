@@ -1,0 +1,413 @@
+{
+  "name": "Xahau Governance Game Hook",
+  "description": "The Governance Game is an innovative governance mechanism within the Xahau ecosystem to ensure a community-centric approach towards decision-making.",
+  "readme": "# Xahau Governance Game\n\nThe governance hook of Xahau. It runs a 20-seat table whose members vote on who sits at the table, which hooks run on the genesis account, and the reward rate and delay.\n\nThe table on the genesis account (rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh) is the **L1 table**. A seat at L1 can hold an account that runs this same hook and is blackholed: that account is an **L2 table**, whose members vote together for that L1 seat.\n\n## Voting\n\nA member votes with an **Invoke** transaction to the table's account. The hook ignores every other transaction type.\n\n| Parameter | Value |\n| --- | --- |\n| `T` | The topic, 2 bytes (below). |\n| `V` | The value voted for. |\n| `L` | L2 tables only: `1` to vote on the L1 topic, `2` to vote on the L2 table's own topic. |\n\n| Topic | `T` | `V` | When it passes |\n| --- | --- | --- | --- |\n| Seat 0-19 | `S` + seat number (one byte, 0x00-0x13) | 20-byte account ID; all zeros empties the seat | The seat changes. If the account already holds another seat, it moves. |\n| Hook position 0-9 | `H` + position (one byte, 0x00-0x09) | 32-byte HookHash; all zeros removes the hook | The hook emits a SetHook on the genesis account for that position. |\n| Reward rate | `RR` | 8-byte XFL, little-endian | The new rate is stored. L1 only. |\n| Reward delay | `RD` | 8-byte XFL, little-endian (seconds) | The new delay is stored. L1 only. |\n\nA member has one vote per topic and layer; voting again moves that vote. When enough members vote for the same value, the change is made:\n\n- **Seats:** 80% of the filled seats, rounded down, and at least 2.\n- **Everything else:** every filled seat.\n- **An L2 table voting on an L1 topic:** 51% of its filled seats, at least 2. The L2 table then casts that vote at L1 with an emitted Invoke.\n\nThe table never drops below 2 members. A member who is replaced or removed loses all their open votes.\n\n## Setup\n\nThe first Invoke after installation sets the table up from the hook parameters: `IMC` (initial member count, 1 byte), `IS` + seat number (each initial member's 20-byte account ID), and on L1 `IRR` and `IRD` (the initial reward rate and delay, 8-byte XFL).\n\n## State\n\nThe state is in the account's zero namespace (`0000…0000`). The genesis account's reward hook reads the reward rate and delay from it.\n\n- **Current member count**: key `MC`. Filled seats, 1 byte.\n- **Current reward rate** and **Current reward delay**: keys `RR` and `RD` (L1 only). The rate as a fraction, the delay in seconds.\n- **Seat Place**: the seat number as the key; the member's account as the value. An empty seat has no entry.\n- **Account Place**: the member's account ID as the key; their seat number as the value.\n- **Vote Seat**, **Vote Hook**, **Vote Reward Rate**, **Vote Reward Delay**: one entry per open vote. Key: `V`, the topic, the layer and the voter's account. Value: what they voted for.\n- **Count Vote Seat**, **Count Vote Hook**, **Count Vote Reward Rate**, **Count Vote Reward Delay**: how many members voted for each value. Key: `C`, the topic, the layer and the value. The value is cut to fit: a HookHash loses its first 4 bytes. The entry is deleted when its count reaches zero.\n\nKeys shorter than 32 bytes are padded with zeros on the left. Numbers are little-endian.\n\n## More\n\nSource: [hook/genesis/govern.c](https://github.com/Xahau/xahaud/blob/dev/hook/genesis/govern.c) in xahaud. The reward hook that reads RR and RD: [hook/genesis/reward.c](https://github.com/Xahau/xahaud/blob/dev/hook/genesis/reward.c).",
+  "repo": "https://github.com/Xahau/xahaud/blob/dev/hook/genesis/govern.c",
+  "license": "Unlicensed",
+  "publishers": [],
+  "namespaces": {
+    "0000000000000000000000000000000000000000000000000000000000000000": "Genesis (zero namespace)"
+  },
+  "abi": {
+    "hookStates": [
+      {
+        "data": [
+          {
+            "type": "UInt8",
+            "label": "Count",
+            "byteLength": 1
+          }
+        ],
+        "name": "Current member count",
+        "selector": [
+          {
+            "type": "Null",
+            "label": "padding",
+            "exclude": true,
+            "byteLength": 30
+          },
+          {
+            "type": "VarString",
+            "label": "type",
+            "pattern": "MC",
+            "byteLength": 2,
+            "patternEncoding": "ascii"
+          }
+        ],
+        "description": ""
+      },
+      {
+        "data": [
+          {
+            "type": "XFL",
+            "label": "Value"
+          }
+        ],
+        "name": "Current reward rate",
+        "selector": [
+          {
+            "type": "Null",
+            "label": "padding",
+            "exclude": true,
+            "byteLength": 30
+          },
+          {
+            "type": "VarString",
+            "label": "type",
+            "pattern": "RR",
+            "byteLength": 2,
+            "patternEncoding": "ascii"
+          }
+        ],
+        "description": ""
+      },
+      {
+        "data": [
+          {
+            "type": "XFL",
+            "label": "Value"
+          }
+        ],
+        "name": "Current reward delay",
+        "selector": [
+          {
+            "type": "Null",
+            "label": "padding",
+            "exclude": true,
+            "byteLength": 30
+          },
+          {
+            "type": "VarString",
+            "label": "type",
+            "pattern": "RD",
+            "byteLength": 2,
+            "patternEncoding": "ascii"
+          }
+        ],
+        "description": ""
+      },
+      {
+        "data": [
+          {
+            "type": "AccountID",
+            "label": "Account"
+          }
+        ],
+        "name": "Seat Place",
+        "selector": [
+          {
+            "type": "Null",
+            "label": "padding",
+            "exclude": true,
+            "byteLength": 31
+          },
+          {
+            "type": "UInt8",
+            "label": "SeatID"
+          }
+        ],
+        "description": ""
+      },
+      {
+        "data": [
+          {
+            "type": "UInt8",
+            "label": "SeatID"
+          }
+        ],
+        "name": "Account Place",
+        "selector": [
+          {
+            "type": "Null",
+            "label": "padding",
+            "exclude": true,
+            "byteLength": 12
+          },
+          {
+            "type": "AccountID",
+            "label": "Account",
+            "description": "The regex refuses an account ID that starts with 18 zero bytes: that is a short key such as MC, not an account.",
+            "patternRegex": "^(?!0{36})[0-9A-F]{40}$",
+            "patternEncoding": "hex"
+          }
+        ],
+        "description": "Member account to its seat. Key: the 20-byte account ID, zero-padded on the left by xahaud."
+      },
+      {
+        "data": [
+          {
+            "type": "Hash256",
+            "label": "HookHash"
+          }
+        ],
+        "name": "Vote Hook",
+        "selector": [
+          {
+            "type": "VarString",
+            "label": "Type",
+            "pattern": "VH",
+            "byteLength": 2,
+            "patternEncoding": "ascii"
+          },
+          {
+            "type": "UInt8",
+            "label": "Slot"
+          },
+          {
+            "type": "UInt8",
+            "label": "Layer"
+          },
+          {
+            "type": "Null",
+            "label": "padding",
+            "exclude": true,
+            "byteLength": 8
+          },
+          {
+            "type": "AccountID",
+            "label": "Voter"
+          }
+        ],
+        "description": ""
+      },
+      {
+        "data": [
+          {
+            "type": "XFL",
+            "label": "Value"
+          }
+        ],
+        "name": "Vote Reward Rate",
+        "selector": [
+          {
+            "type": "VarString",
+            "label": "type",
+            "pattern": "VRR",
+            "byteLength": 3,
+            "patternEncoding": "ascii"
+          },
+          {
+            "type": "UInt8",
+            "label": "Layer"
+          },
+          {
+            "type": "Null",
+            "label": "padding",
+            "exclude": true,
+            "byteLength": 8
+          },
+          {
+            "type": "AccountID",
+            "label": "Voter"
+          }
+        ],
+        "description": ""
+      },
+      {
+        "data": [
+          {
+            "type": "XFL",
+            "label": "Value"
+          }
+        ],
+        "name": "Vote Reward Delay",
+        "selector": [
+          {
+            "type": "VarString",
+            "label": "type",
+            "pattern": "VRD",
+            "byteLength": 3,
+            "patternEncoding": "ascii"
+          },
+          {
+            "type": "UInt8",
+            "label": "Layer"
+          },
+          {
+            "type": "Null",
+            "label": "padding",
+            "exclude": true,
+            "byteLength": 8
+          },
+          {
+            "type": "AccountID",
+            "label": "Voter"
+          }
+        ],
+        "description": ""
+      },
+      {
+        "data": [
+          {
+            "type": "AccountID",
+            "label": "Voted for"
+          }
+        ],
+        "name": "Vote Seat",
+        "selector": [
+          {
+            "type": "VarString",
+            "label": "type",
+            "pattern": "VS",
+            "byteLength": 2,
+            "patternEncoding": "ascii"
+          },
+          {
+            "type": "UInt8",
+            "label": "SeatID"
+          },
+          {
+            "type": "UInt8",
+            "label": "Layer"
+          },
+          {
+            "type": "Null",
+            "label": "padding",
+            "exclude": true,
+            "byteLength": 8
+          },
+          {
+            "type": "AccountID",
+            "label": "Voter"
+          }
+        ],
+        "description": ""
+      },
+      {
+        "data": [
+          {
+            "type": "UInt8",
+            "label": "Count"
+          }
+        ],
+        "name": "Count Vote Hook",
+        "selector": [
+          {
+            "type": "VarString",
+            "label": "type",
+            "pattern": "CH",
+            "byteLength": 2,
+            "patternEncoding": "ascii"
+          },
+          {
+            "type": "UInt8",
+            "label": "Slot"
+          },
+          {
+            "type": "UInt8",
+            "label": "Layer"
+          },
+          {
+            "type": "Blob",
+            "label": "HookHash (bytes 5-32)",
+            "byteLength": 28
+          }
+        ],
+        "description": "Votes for a hook hash at a hook position. The key holds bytes 5-32 of the hash: the hook overwrites the first 4 with C, H, position and layer."
+      },
+      {
+        "data": [
+          {
+            "type": "UInt8",
+            "label": "Count"
+          }
+        ],
+        "name": "Count Vote Reward Rate",
+        "selector": [
+          {
+            "type": "VarString",
+            "label": "type",
+            "pattern": "CRR",
+            "byteLength": 3,
+            "patternEncoding": "ascii"
+          },
+          {
+            "type": "UInt8",
+            "label": "Layer"
+          },
+          {
+            "type": "Null",
+            "label": "padding",
+            "exclude": true,
+            "byteLength": 20
+          },
+          {
+            "type": "XFL",
+            "label": "Value"
+          }
+        ],
+        "description": ""
+      },
+      {
+        "data": [
+          {
+            "type": "UInt8",
+            "label": "Count"
+          }
+        ],
+        "name": "Count Vote Reward Delay",
+        "selector": [
+          {
+            "type": "VarString",
+            "label": "type",
+            "pattern": "CRD",
+            "byteLength": 3,
+            "patternEncoding": "ascii"
+          },
+          {
+            "type": "UInt8",
+            "label": "Layer"
+          },
+          {
+            "type": "Null",
+            "label": "padding",
+            "exclude": true,
+            "byteLength": 20
+          },
+          {
+            "type": "XFL",
+            "label": "Value"
+          }
+        ],
+        "description": ""
+      },
+      {
+        "data": [
+          {
+            "type": "UInt8",
+            "label": "Count"
+          }
+        ],
+        "name": "Count Vote Seat",
+        "selector": [
+          {
+            "type": "VarString",
+            "label": "type",
+            "pattern": "CS",
+            "byteLength": 2,
+            "patternEncoding": "ascii"
+          },
+          {
+            "type": "UInt8",
+            "label": "SeatID"
+          },
+          {
+            "type": "UInt8",
+            "label": "Layer"
+          },
+          {
+            "type": "Null",
+            "label": "padding",
+            "exclude": true,
+            "byteLength": 8
+          },
+          {
+            "type": "AccountID",
+            "label": "Voted for"
+          }
+        ],
+        "description": ""
+      }
+    ]
+  }
+}
